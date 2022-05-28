@@ -5,3 +5,61 @@ body {
     cursor: pointer;
   }
 }
+
+.game {
+  padding: 3em;
+}
+
+.cell {
+  display: inline-block;
+  width: 75px;
+  height: 75px;
+  background-size: contain;
+}
+
+.empty {
+  background-color: #fff;
+  border: 1px dotted #eee;
+}
+
+.bowl {
+  background-image: url("./img/bowl.png");
+}
+
+.full-bowl {
+  background-image: url("./img/full-bowl.png");
+}
+
+.cat {
+  background-image: url("./img/cat.png");
+}
+
+.food {
+  background-image: url("./img/food.png");
+}
+
+.wall {
+  background-image: url("./img/wall.png");
+}
+
+.bowls-to-fill {
+  font-size: 1.5em;
+
+  span {
+    color: blue;
+    font-weight: 700;
+  }
+}
+
+button {
+  padding: 1em;
+  background-color: #eee;
+  border-radius: 5em;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+
+  &:hover {
+    background-color: #88f;
+  }
+}
