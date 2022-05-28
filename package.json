@@ -1,0 +1,30 @@
+{
+  "name": "cats-and-dogs-food",
+  "description": "Cats & Dogs Food",
+  "author": "Dave Peck <davepeck@gmail.com>",
+  "version": "0.0.1",
+  "license": "MIT",
+  "browserslist": "> 0.5%, last 2 versions, not dead",
+  "engines": {
+    "node": "^16",
+    "npm": "^8"
+  },
+  "devDependencies": {
+    "@parcel/transformer-sass": "^2",
+    "@types/react": "^17",
+    "@types/react-dom": "^17",
+    "clsx": "^1",
+    "parcel": "^2",
+    "react": "^17",
+    "react-dom": "^17",
+    "typescript": "^4",
+    "vscode-css-languageservice": "^5"
+  },
+  "scripts": {
+    "start": "parcel src/index.html",
+    "build": "parcel build src/index.html",
+    "ci": "npm run type-check && npm run validate-css",
+    "type-check": "tsc --noEmit",
+    "validate-css": "node scripts/validate-css.mjs src"
+  }
+}

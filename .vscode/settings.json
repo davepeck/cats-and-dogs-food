@@ -1,0 +1,9 @@
+{
+  "typescript.format.enable": true,
+  "typescript.validate.enable": true,
+  "css.format.enable": true,
+  "css.validate": true,
+  "html.format.enable": true,
+  "editor.formatOnSaveMode": "file",
+  "editor.formatOnSave": true
+}
