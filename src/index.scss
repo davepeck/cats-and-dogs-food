@@ -12,7 +12,7 @@ body {
 }
 
 .game {
-  max-width: 66vmin;
+  max-width: 60vmin;
   display: flex;
   flex-direction: column;
   margin: 0 auto;
@@ -63,8 +63,11 @@ body {
   background-image: url("./img/wall.png");
 }
 
-.bowls-to-fill {
-  font-size: 1.5em;
+.stats {
+  font-size: 1.25em;
+  line-height: 1em;
+  margin-top: 0.5em;
+  flex: 0 1 200px;
 
   span {
     color: blue;
@@ -72,17 +75,17 @@ body {
   }
 }
 
-.instructions {
-  margin-top: 0.5em;
-  flex: 0 1 200px;
+a:hover {
+  background-color: #ddd;
+  transition: background-color 0.2s ease-in-out;
 }
 
 button {
   display: inline-block;
   color: blue;
   text-decoration: underline;
-  margin-left: 0.25em;
-  padding: 0.25em;
+  margin: 0;
+  padding: 0 0 0 0.25em;
   background-color: transparent;
   border: 0px solid transparent;
   cursor: pointer;

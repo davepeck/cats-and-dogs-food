@@ -29,7 +29,6 @@ const DIRECTIONS: Record<string, [number, number]> = {
   ArrowRight: [1, 0],
 };
 
-
 /** All the levels, in order. */
 const LEVELS = [
   `
@@ -57,7 +56,7 @@ const LEVELS = [
 #######
 `,
   `
-##### 
+ #####
 ##.@ #
 # $$ #
 #.  ##
@@ -166,7 +165,7 @@ const LEVELS = [
 #. $$  #
 #    *@#
 ########
-`
+`,
 ];
 
 /** The type of a level grid. */
@@ -191,8 +190,9 @@ const makeLevel = (levelStr: string): Level => {
   return level;
 };
 
-// validate all levels
-LEVELS.forEach(levelStr => makeLevel(levelStr));
+/** Take a Level grid as input; return a level string back. */
+const makeLevelStr = (level: Level): string =>
+  level.map((line) => line.join("")).join("\n");
 
 /** Get the [x, y] dimensions of the level array. */
 const getLevelSize = (level: Level): [number, number] => [
@@ -265,34 +265,97 @@ const moveCat = (level: Level, x: number, y: number): Level => {
   return newLevel;
 };
 
+/**
+ * Attempt to solve a level. An iterative, breadth-first implementation.
+ * 
+ * Return the minimum number of moves needed to solve the level, or `null` if
+ * the level is unsolvable.
+ */
+const solveLevel = (level: Level): number | null => {
+  const visited = new Set<string>([makeLevelStr(level)]);
+  const queue: [Level, number][] = [[level, 0]];
+
+  while (queue.length > 0) {
+    const [currentLevel, currentMoves] = queue.shift()!;
+
+    // check if we've reached a solution
+    if (getLevelEmptyBowls(currentLevel) === 0) {
+      return currentMoves;
+    }
+
+    // determine our neighbors
+    const neighbors = [moveCat(currentLevel, -1, 0), moveCat(currentLevel, 1, 0), moveCat(currentLevel, 0, -1), moveCat(currentLevel, 0, 1)];
+    for (const neighbor of neighbors) {
+      const neighborStr = makeLevelStr(neighbor);
+      if (!visited.has(neighborStr)) {
+        visited.add(neighborStr);
+        queue.push([neighbor, currentMoves + 1]);
+      }
+    }
+  }
+
+  return null;
+}
+
+
 /** Props to the primary Game component. */
 interface GameProps {
   levelNumber: number;
-  levelStr: string;
+  minMoves: number;
+  levelStart: Level;
   onLevelComplete: () => void;
 }
 
 /** The Game component itself. */
-const Game: React.FC<GameProps> = ({ levelNumber, levelStr, onLevelComplete }) => {
-  const [level, setLevel] = useState(makeLevel(levelStr));
+const Game: React.FC<GameProps> = ({
+  levelNumber,
+  minMoves,
+  levelStart,
+  onLevelComplete,
+}) => {
+  const [level, setLevel] = useState(levelStart);
+  const [moves, setMoves] = useState(0);
 
+  // Set the initial value for currentLevel
   useEffect(() => {
-    setLevel(makeLevel(levelStr));
-  }, [levelStr]);
+    setLevel(levelStart);
+  }, [levelStart]);
 
   // Update the level state whenever keys are pressed
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       const direction = DIRECTIONS[e.key];
       if (direction) {
-        setLevel(moveCat(level, ...direction));
+        const newLevel = moveCat(level, ...direction);
+        const levelChanged = makeLevelStr(newLevel) !== makeLevelStr(level);
+        if (levelChanged) {
+          setLevel(newLevel);
+          setMoves(moves + 1);
+        }
       }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [level, setLevel]);
+  }, [level, setLevel, moves]);
 
+  // have we beat the level?
   const bowlsToFill = getLevelEmptyBowls(level);
+
+  // can we still solve the level?
+  const minMovesNow = solveLevel(level);
+
+  let movesDescription;
+  if (moves === 0) {
+    movesDescription = (<p>You can beat this level in <span>{minMoves}</span> moves.</p>);
+  } else if (bowlsToFill === 0) {
+    if (moves === minMoves) {
+      movesDescription = (<p>You took a perfect <span>{moves}</span> moves!</p>);
+    } else {
+      movesDescription = (<p>You took <span>{moves}</span> moves; it can be done in <span>{minMoves}</span>.</p>);
+    }
+  } else {
+    movesDescription = (<p>Moves so far: <span>{moves}</span></p>);
+  }
 
   return (
     <div className="game">
@@ -305,25 +368,14 @@ const Game: React.FC<GameProps> = ({ levelNumber, levelStr, onLevelComplete }) =
           </div>
         ))}
       </div>
-      <div className="instructions">
-        <span className="bowls-to-fill">
-          Level <span>{levelNumber}</span>.{" "}
-          {bowlsToFill === 0 ? (
-            "You beat the level!"
-          ) : (
-            <>
-              You have <span>{bowlsToFill}</span>{" "}
-              {bowlsToFill === 1 ? "bowl" : "bowls"} to fill.
-            </>
-          )}
-          {bowlsToFill === 0 ? (
-            <button onClick={onLevelComplete}>Next level!</button>
-          ) : (
-            <button onClick={() => setLevel(makeLevel(levelStr))}>
-              I&rsquo;m stuck!
-            </button>
-          )}
-        </span>
+      <div className="stats">
+        {bowlsToFill === 0 && <p>You won! 😸 <a href="#" onClick={onLevelComplete}>Play the next level</a>.</p>}
+        <p>Level: <span>{levelNumber}</span></p>
+        {movesDescription}
+        {
+          minMovesNow === null &&
+          <p>Whoops! You're struck. <a href="#" onClick={() => setLevel(levelStart)}>Try again</a>.</p>
+        }
       </div>
     </div>
   );
@@ -331,26 +383,38 @@ const Game: React.FC<GameProps> = ({ levelNumber, levelStr, onLevelComplete }) =
 
 /** The top-level react app! */
 export const App: React.FC = () => {
+  // Determine the current level
   const urlParams = new URLSearchParams(window.location.search);
-  const maybeInitialIndex = parseInt(urlParams.get("level") || "0", 10);
-  const initialIndex = isNaN(maybeInitialIndex)
+  const maybeLevelNumber = parseInt(urlParams.get("level") || "0", 10);
+  const levelIndex = isNaN(maybeLevelNumber)
     ? 0
-    : Math.min(Math.max(1, maybeInitialIndex), LEVELS.length) - 1;
-  const [levelIndex, setLevelIndex] = useState(initialIndex);
+    : Math.min(Math.max(1, maybeLevelNumber), LEVELS.length) - 1;
 
-  const incrementLevelIndex = () => {
-    setLevelIndex((levelIndex) => (levelIndex + 1) % LEVELS.length);
+
+  const navigateToNextLevel = () => {
+    // use navigation so that reload takes you back to the same level
+    const nextLevelNumber = ((levelIndex + 1) % LEVELS.length) + 1;
+    window.location.href = `?level=${nextLevelNumber}`;
   };
 
-  console.log(`Playing level ${levelIndex + 1}`);
-  console.log(LEVELS[levelIndex]);
+  const level = makeLevel(LEVELS[levelIndex]);
+  const minMoves = solveLevel(level);
+
+  if (minMoves === null) {
+    return (
+      <div className="app">
+        <h1>Unsolvable level!</h1>
+      </div>
+    );
+  }
 
   return (
     <div className="app">
       <Game
         levelNumber={levelIndex + 1}
-        levelStr={LEVELS[levelIndex]}
-        onLevelComplete={incrementLevelIndex}
+        minMoves={minMoves}
+        levelStart={level}
+        onLevelComplete={navigateToNextLevel}
       />
     </div>
   );
