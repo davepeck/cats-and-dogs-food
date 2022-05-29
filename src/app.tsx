@@ -44,7 +44,7 @@ const LEVELS = [
  #.. #
 ###  #
 # $  #
-# $ # 
+# $ ##
 #@  # 
 ##### 
 `,
@@ -267,7 +267,7 @@ const moveCat = (level: Level, x: number, y: number): Level => {
 
 /**
  * Attempt to solve a level. An iterative, breadth-first implementation.
- * 
+ *
  * Return the minimum number of moves needed to solve the level, or `null` if
  * the level is unsolvable.
  */
@@ -284,7 +284,12 @@ const solveLevel = (level: Level): number | null => {
     }
 
     // determine our neighbors
-    const neighbors = [moveCat(currentLevel, -1, 0), moveCat(currentLevel, 1, 0), moveCat(currentLevel, 0, -1), moveCat(currentLevel, 0, 1)];
+    const neighbors = [
+      moveCat(currentLevel, -1, 0),
+      moveCat(currentLevel, 1, 0),
+      moveCat(currentLevel, 0, -1),
+      moveCat(currentLevel, 0, 1),
+    ];
     for (const neighbor of neighbors) {
       const neighborStr = makeLevelStr(neighbor);
       if (!visited.has(neighborStr)) {
@@ -295,8 +300,7 @@ const solveLevel = (level: Level): number | null => {
   }
 
   return null;
-}
-
+};
 
 /** Props to the primary Game component. */
 interface GameProps {
@@ -346,15 +350,32 @@ const Game: React.FC<GameProps> = ({
 
   let movesDescription;
   if (moves === 0) {
-    movesDescription = (<p>You can beat this level in <span>{minMoves}</span> moves.</p>);
+    movesDescription = (
+      <p>
+        You can beat this level in <span>{minMoves}</span> moves.
+      </p>
+    );
   } else if (bowlsToFill === 0) {
     if (moves === minMoves) {
-      movesDescription = (<p>You took a perfect <span>{moves}</span> moves!</p>);
+      movesDescription = (
+        <p>
+          You took a perfect <span>{moves}</span> moves!
+        </p>
+      );
     } else {
-      movesDescription = (<p>You took <span>{moves}</span> moves; it can be done in <span>{minMoves}</span>.</p>);
+      movesDescription = (
+        <p>
+          You took <span>{moves}</span> moves; it can be done in{" "}
+          <span>{minMoves}</span>.
+        </p>
+      );
     }
   } else {
-    movesDescription = (<p>Moves so far: <span>{moves}</span></p>);
+    movesDescription = (
+      <p>
+        Moves so far: <span>{moves}</span>
+      </p>
+    );
   }
 
   return (
@@ -369,13 +390,28 @@ const Game: React.FC<GameProps> = ({
         ))}
       </div>
       <div className="stats">
-        {bowlsToFill === 0 && <p>You won! 😸 <a href="#" onClick={onLevelComplete}>Play the next level</a>.</p>}
-        <p>Level: <span>{levelNumber}</span></p>
+        {bowlsToFill === 0 && (
+          <p>
+            You won! 😸{" "}
+            <a href="#" onClick={onLevelComplete}>
+              Play the next level
+            </a>
+            .
+          </p>
+        )}
+        <p>
+          Level: <span>{levelNumber}</span>
+        </p>
         {movesDescription}
-        {
-          minMovesNow === null &&
-          <p>Whoops! You're struck. <a href="#" onClick={() => setLevel(levelStart)}>Try again</a>.</p>
-        }
+        {minMovesNow === null && (
+          <p>
+            Whoops! You're struck.{" "}
+            <a href="#" onClick={() => setLevel(levelStart)}>
+              Try again
+            </a>
+            .
+          </p>
+        )}
       </div>
     </div>
   );
@@ -389,7 +425,6 @@ export const App: React.FC = () => {
   const levelIndex = isNaN(maybeLevelNumber)
     ? 0
     : Math.min(Math.max(1, maybeLevelNumber), LEVELS.length) - 1;
-
 
   const navigateToNextLevel = () => {
     // use navigation so that reload takes you back to the same level
