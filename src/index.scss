@@ -6,20 +6,41 @@ body {
   }
 }
 
+.app {
+  width: 100%;
+  padding: 1em 1em;
+}
+
 .game {
-  padding: 3em;
+  max-width: 66vmin;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+}
+
+.board {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+  justify-content: space-around; 
+}
+
+.row {
+  display: flex;
 }
 
 .cell {
-  display: inline-block;
-  width: 75px;
-  height: 75px;
-  background-size: contain;
+  flex: 1 0 auto;
+  aspect-ratio: 1;
+  background-size: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .empty {
   background-color: #fff;
-  border: 1px dotted #eee;
 }
 
 .bowl {
@@ -51,15 +72,23 @@ body {
   }
 }
 
+.instructions {
+  margin-top: 0.5em;
+  flex: 0 1 200px;
+}
+
 button {
-  padding: 1em;
-  background-color: #eee;
-  border-radius: 5em;
-  border: 1px solid #ccc;
+  display: inline-block;
+  color: blue;
+  text-decoration: underline;
+  margin-left: 0.25em;
+  padding: 0.25em;
+  background-color: transparent;
+  border: 0px solid transparent;
   cursor: pointer;
   transition: background-color 0.2s ease-in-out;
 
   &:hover {
-    background-color: #88f;
+    background-color: #aaf;
   }
 }

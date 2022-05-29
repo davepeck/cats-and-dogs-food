@@ -29,6 +29,7 @@ const DIRECTIONS: Record<string, [number, number]> = {
   ArrowRight: [1, 0],
 };
 
+
 /** All the levels, in order. */
 const LEVELS = [
   `
@@ -55,17 +56,138 @@ const LEVELS = [
 # $ ..#
 #######
 `,
+  `
+##### 
+##.@ #
+# $$ #
+#.  ##
+##### 
+`,
+  `
+##### 
+#   ##
+#$ *@#
+#..$ #
+######
+`,
+  `
+#####  
+# . ## 
+#  $ ##
+##  $+#
+ ######
+`,
+  `
+  ###   
+###+####
+#  $$  #
+#   .  #
+########
+`,
+  `
+#####
+###   #
+# $   #
+#.@$.##
+######
+`,
+  `
+#####
+#   #
+##   #
+# $*##
+# @ .#
+######
+`,
+  `
+#####
+#  .##
+#  $@#
+##$  #
+ # . #
+ #####
+`,
+  `
+#####
+#   ##
+#   @#
+##$$ #
+#. .##
+#####
+`,
+  `
+######
+#.   ###
+# $ $  #
+# .#@  #
+########
+`,
+  `
+#####
+#.@ #
+#  $##
+# $ .#
+##   #
+ #####
+`,
+  `
+######
+# @#.#
+#$$ .#
+#.$  #
+#   ##
+#####
+`,
+  `
+#####
+#  .####
+#@$ $  #
+## .   #
+ #######
+`,
+  `
+######
+# $ .##
+#.  $ #
+#  $@.#
+#######
+`,
+  `
+######
+# . .#
+#@$$##
+##   #
+ #   #
+ #####
+`,
+  `
+######
+# .  ###
+#. $$  #
+#    *@#
+########
+`
 ];
 
 /** The type of a level grid. */
 type Level = string[][];
 
-/** Take a level string as input; return a level grid. */
-const makeLevel = (levelStr: string): Level =>
+/** Take a level string as input; return a (possibly uneven) level grid. */
+const innerMakeLevel = (levelStr: string): Level =>
   levelStr
     .split("\n")
     .filter((line) => line != "")
     .map((line) => line.split(""));
+
+/** Take a level string as input; return an (even) level grid. */
+const makeLevel = (levelStr: string): Level => {
+  const unevenLevel = innerMakeLevel(levelStr);
+  const width = Math.max(...unevenLevel.map((line) => line.length));
+  return unevenLevel.map((line) => {
+    const paddedLine = line.concat(Array(width - line.length).fill(EMPTY));
+    return paddedLine;
+  });
+};
 
 /** Get the [x, y] dimensions of the level array. */
 const getLevelSize = (level: Level): [number, number] => [
@@ -82,8 +204,7 @@ const getLevelEmptyBowls = (level: Level): number =>
 /** Get the [x, y] of the cat in the level. */
 const getLevelCat = (level: Level): [number, number] => {
   // deal with the fact that we can keep both cat + bowl in the same grid piece
-  const isCatCell = (c: string) =>
-    c === CAT || c === CAT_BOWL;
+  const isCatCell = (c: string) => c === CAT || c === CAT_BOWL;
   const catLine = level.find((line) => line.findIndex(isCatCell) !== -1);
   if (!catLine) {
     throw new Error("No cat found");
@@ -102,7 +223,7 @@ const addCat = (cell: string): string => {
   } else {
     throw new Error(`Cannot add cat to ${cell}`);
   }
-}
+};
 
 /** Remove a cat from a cell. */
 const removeCat = (cell: string): string => {
@@ -113,7 +234,7 @@ const removeCat = (cell: string): string => {
   } else {
     throw new Error(`Cannot remove cat from ${cell}`);
   }
-}
+};
 
 /** Return a new Level where the cat has moved. */
 const moveCat = (level: Level, x: number, y: number): Level => {
@@ -131,7 +252,8 @@ const moveCat = (level: Level, x: number, y: number): Level => {
     if (newFoodCell === EMPTY || newFoodCell === BOWL) {
       newLevel[catY][catX] = removeCat(catCell);
       // allow pushing full bowls into empty bowls
-      newLevel[newY][newX] = newCell === FULL_BOWL ? addCat(BOWL) : addCat(EMPTY);
+      newLevel[newY][newX] =
+        newCell === FULL_BOWL ? addCat(BOWL) : addCat(EMPTY);
       newLevel[newFoodY][newFoodX] = newFoodCell === EMPTY ? FOOD : FULL_BOWL;
     }
   }
@@ -178,7 +300,7 @@ const Game: React.FC<GameProps> = ({ levelStr, onLevelComplete }) => {
         ))}
       </div>
       <div className="instructions">
-        <p className="bowls-to-fill">
+        <span className="bowls-to-fill">
           {bowlsToFill === 0 ? (
             "You beat the level!"
           ) : (
@@ -187,19 +309,15 @@ const Game: React.FC<GameProps> = ({ levelStr, onLevelComplete }) => {
               {bowlsToFill === 1 ? "bowl" : "bowls"} to fill.
             </>
           )}
-        </p>
-        <p>Use arrow keys to move the cat. Push cat food on top of bowls.</p>
-        {bowlsToFill > 0 && (
-          <p>If you get stuck, press the "I&rsquo;m Stuck" button.</p>
-        )}
+          {bowlsToFill === 0 ? (
+            <button onClick={onLevelComplete}>Next level!</button>
+          ) : (
+            <button onClick={() => setLevel(makeLevel(levelStr))}>
+              I&rsquo;m stuck!
+            </button>
+          )}
+        </span>
       </div>
-      {bowlsToFill === 0 ? (
-        <button onClick={onLevelComplete}>Play the next level</button>
-      ) : (
-        <button onClick={() => setLevel(makeLevel(levelStr))}>
-          I&rsquo;m Stuck
-        </button>
-      )}
     </div>
   );
 };
@@ -208,15 +326,20 @@ const Game: React.FC<GameProps> = ({ levelStr, onLevelComplete }) => {
 export const App: React.FC = () => {
   const urlParams = new URLSearchParams(window.location.search);
   const maybeInitialIndex = parseInt(urlParams.get("level") || "0", 10);
-  const initialIndex = isNaN(maybeInitialIndex) ? 0 : Math.min(Math.max(1, maybeInitialIndex), LEVELS.length) - 1;
+  const initialIndex = isNaN(maybeInitialIndex)
+    ? 0
+    : Math.min(Math.max(1, maybeInitialIndex), LEVELS.length) - 1;
   const [levelIndex, setLevelIndex] = useState(initialIndex);
 
   const incrementLevelIndex = () => {
     setLevelIndex((levelIndex) => (levelIndex + 1) % LEVELS.length);
   };
 
+  console.log(`Playing level ${levelIndex + 1}`);
+  console.log(LEVELS[levelIndex]);
+
   return (
-    <div>
+    <div className="app">
       <Game
         levelStr={LEVELS[levelIndex]}
         onLevelComplete={incrementLevelIndex}
