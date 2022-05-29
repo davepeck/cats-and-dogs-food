@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import * as levels from "./levels";
 import { solve } from "./solver";
 import { Progress, computeProgress } from "./progress";
@@ -37,17 +37,64 @@ interface GridProps {
 }
 
 /** The grid drawing component. */
-const Grid: React.FC<GridProps> = ({ grid }) => (
-  <div className="grid">
-    {grid.map((row, y) => (
-      <div className="row" key={y}>
-        {row.map((cell, x) => (
-          <div className={`cell ${CSS_CLASS_NAMES[cell]}`} key={x} />
-        ))}
-      </div>
-    ))}
-  </div>
-);
+const Grid: React.FC<GridProps> = ({ grid }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [windowSize, setWindowSize] = useState<[number, number]>([0, 0]);
+  const [tileSize, setTileSize] = useState<number>(0);
+
+  // update window size whenever the container changes
+  useEffect(() => {
+    const updateWindowSize = () => {
+      setWindowSize([window.innerHeight, window.innerWidth]);
+    };
+    updateWindowSize();
+    window.addEventListener("resize", updateWindowSize);
+    return () => window.removeEventListener("resize", updateWindowSize);
+  }, []);
+
+  // Update the tile size whenever the layout changes
+  useEffect(() => {
+    const current = containerRef.current;
+    if (current === null) return;
+
+    // Determine how large the tiles can get such that the grid fits within
+    // the available container width AND does not overflow the container height.
+    const [tilesHigh, tilesWide] = levels.getSize(grid);
+    const [containerHeight, containerWidth] = [
+      current.offsetHeight,
+      current.offsetWidth,
+    ];
+    const [windowHeight, windowWidth] = windowSize;
+    const maxHeight = windowHeight * 0.75;
+    const maxWidth = Math.min(containerWidth, windowWidth) * 0.75;
+    const maxTileSize = Math.floor(
+      Math.min(maxHeight / tilesHigh, maxWidth / tilesWide)
+    );
+    console.log(
+      `Container size: ${containerHeight}, ${containerWidth}`,
+      `Window size: ${windowHeight}, ${windowWidth}`,
+      `Max tile size: ${maxTileSize}`,
+      `Tiles: ${tilesHigh}x${tilesWide}`
+    );
+    setTileSize(maxTileSize);
+  }, [grid, windowSize]);
+
+  return (
+    <div className="grid" ref={containerRef}>
+      {grid.map((row, y) => (
+        <div className="row" key={y}>
+          {row.map((cell, x) => (
+            <div
+              className={`cell ${CSS_CLASS_NAMES[cell]}`}
+              style={{ width: `${tileSize}px`, height: `${tileSize}px` }}
+              key={x}
+            />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+};
 
 /** Props to the primary Game component. */
 interface GameProps {
@@ -139,7 +186,8 @@ const Game: React.FC<GameProps> = ({
     } else {
       return (
         <p>
-          Moves so far: {hints ? `${PROGRESS_CATS[progress]} ` : ''} <span>{moves}</span>
+          Moves so far: {hints ? `${PROGRESS_CATS[progress]} ` : ""}{" "}
+          <span>{moves}</span>
         </p>
       );
     }
@@ -149,7 +197,11 @@ const Game: React.FC<GameProps> = ({
     <div className="game">
       <Grid grid={grid} />
       <div className="stats">
-        {bowlsToFill === 0 && (
+        <p>
+          Level: <span>{levelNumber}</span>
+        </p>
+        {progressDescription()}
+        {bowlsToFill === 0 ? (
           <p>
             You won! 😽{" "}
             <a href="#" onClick={onLevelComplete}>
@@ -157,18 +209,15 @@ const Game: React.FC<GameProps> = ({
             </a>
             .
           </p>
+        ) : (
+          <p>
+            Feeling stuck?{" "}
+            <a href="#" onClick={() => reset(level)}>
+              Try again
+            </a>
+            .
+          </p>
         )}
-        <p>
-          Level: <span>{levelNumber}</span>
-        </p>
-        {progressDescription()}
-        <p>
-          Feeling stuck?{" "}
-          <a href="#" onClick={() => reset(level)}>
-            Try again
-          </a>
-          .
-        </p>
       </div>
     </div>
   );
@@ -208,13 +257,15 @@ export const App: React.FC = () => {
 
   return (
     <div className="app">
-      <Game
-        levelNumber={levelIndex + 1}
-        hints={forceHints || levelIndex < 10}
-        minMoves={minMoves}
-        level={level}
-        onLevelComplete={navigateToNextLevel}
-      />
+      <div className="inner">
+        <Game
+          levelNumber={levelIndex + 1}
+          hints={forceHints || levelIndex < 10}
+          minMoves={minMoves}
+          level={level}
+          onLevelComplete={navigateToNextLevel}
+        />
+      </div>
     </div>
   );
 };

@@ -4,6 +4,9 @@ body {
   &:hover {
     cursor: pointer;
   }
+
+  padding: 0;
+  margin: 0;
 }
 
 p {
@@ -11,13 +14,11 @@ p {
 }
 
 .app {
-  width: 100%;
   padding: 2em;
 }
 
 .game {
   display: flex;
-  width: 100%;
   min-width: 320px;
   flex-direction: row;
   flex-wrap: wrap;
@@ -28,20 +29,18 @@ p {
 .grid {
   min-width: 320px;
   flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
   padding: 0;
   margin: 0;
-  justify-content: space-around; 
+  overflow-y: scroll;
+  max-height: 80vh;
 }
 
 .row {
-  display: flex;
+  display: block;
 }
 
 .cell {
-  flex: 1 0 auto;
-  aspect-ratio: 1;
+  display: inline-block;
   background-size: 100%;
   background-position: center;
   background-repeat: no-repeat;
@@ -74,7 +73,7 @@ p {
 .stats {
   font-size: 1.25em;
   line-height: 1.5em;
-  width: 15me;
+  width: 100%;
 
   span {
     color: blue;
