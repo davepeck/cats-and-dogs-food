@@ -1,8 +1,10 @@
 import {
   LevelGrid,
+  Level,
   makeGridString,
   getEmptyBowlCount,
   moveCat,
+  makeGridFromLines,
 } from "./levels";
 
 /**
@@ -48,3 +50,14 @@ export const solve = (grid: LevelGrid): number | null => {
 
   return null;
 };
+
+
+/** Validate a level, raising an exception if it can't be solved. */
+export const validate = (level: Level): void => {
+  const grid = makeGridFromLines(level.lines);
+  const solution = solve(grid);
+  if (solution === null) {
+    throw new Error(`Unsolvable level: ${makeGridString(grid)}`);
+  }
+  console.log(`Level ${level.title} is solvable in ${solution} moves.`);
+}

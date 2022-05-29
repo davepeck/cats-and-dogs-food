@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import * as levels from "./levels";
-import { solve } from "./solver";
+import { solve, validate } from "./solver";
 
 /** Mappings from grid pieces to their corresponding CSS classes */
 const CSS_CLASS_NAMES: Record<string, string> = {
@@ -21,15 +21,15 @@ const DIRECTIONS: Record<string, [number, number]> = {
   ArrowRight: [0, 1],
 };
 
-/** Props to the board grid component. */
-interface BoardProps {
+/** Props to the grid component. */
+interface GridProps {
   /** The grid to display. */
   grid: levels.LevelGrid;
 }
 
-/** The board grid component. */
-const Board: React.FC<BoardProps> = ({ grid }) => (
-  <div className="board">
+/** The grid drawing component. */
+const Grid: React.FC<GridProps> = ({ grid }) => (
+  <div className="grid">
     {grid.map((row, y) => (
       <div className="row" key={y}>
         {row.map((cell, x) => (
@@ -120,7 +120,7 @@ const Game: React.FC<GameProps> = ({
 
   return (
     <div className="game">
-      <Board grid={grid} />
+      <Grid grid={grid} />
       <div className="stats">
         {bowlsToFill === 0 && (
           <p>
@@ -155,14 +155,8 @@ const Game: React.FC<GameProps> = ({
   );
 };
 
-/** 
 // Validate all levels (can be slow if they're complex!)
-LEVELS.forEach(levelData => {
-  const level = makeLevel(levelData.grid);
-  const minMoves = solveLevel(level);
-  console.log(`Level ${levelData.title ?? 'untitled'} has ${minMoves} moves`);
-})
-*/
+// levels.LEVELS.forEach(validate);
 
 /** The top-level react app! */
 export const App: React.FC = () => {
@@ -187,7 +181,7 @@ export const App: React.FC = () => {
     return (
       <div className="app">
         <h1>Unsolvable level!</h1>
-        <Board grid={grid} />
+        <Grid grid={grid} />
       </div>
     );
   }
