@@ -17,7 +17,7 @@ export const computeProgress = (
   moves: number,
 
   /** The minimum number of moves remaining if the player is perfect from here. */
-  minMovesRemaining: number | null
+  minMovesRemaining: number | null,
 ): Progress => {
   if (minMovesRemaining === null) {
     return "doom";

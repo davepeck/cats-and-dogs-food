@@ -51,15 +51,26 @@ const Grid: React.FC<GridProps> = ({ grid }) => (
 
 /** Props to the primary Game component. */
 interface GameProps {
+  /** The 1-based level number we're playing. */
   levelNumber: number;
+
+  /** If true, give hints about the user's progress. */
+  hints: boolean;
+
+  /** The minimum possible number of moves to win. */
   minMoves: number;
+
+  /** The level to play. */
   level: levels.Level;
+
+  /** Raised when the user wins and chooses to play the next level. */
   onLevelComplete: () => void;
 }
 
 /** The Game component itself. */
 const Game: React.FC<GameProps> = ({
   levelNumber,
+  hints,
   minMoves,
   level,
   onLevelComplete,
@@ -128,7 +139,7 @@ const Game: React.FC<GameProps> = ({
     } else {
       return (
         <p>
-          Moves so far: {PROGRESS_CATS[progress]} <span>{moves}</span>
+          Moves so far: {hints ? `${PROGRESS_CATS[progress]} ` : ''} <span>{moves}</span>
         </p>
       );
     }
@@ -170,6 +181,7 @@ const Game: React.FC<GameProps> = ({
 export const App: React.FC = () => {
   // Determine the current level
   const urlParams = new URLSearchParams(window.location.search);
+  const forceHints = urlParams.get("hints") !== null;
   const maybeLevelNumber = parseInt(urlParams.get("level") || "0", 10);
   const levelIndex = isNaN(maybeLevelNumber)
     ? 0
@@ -198,6 +210,7 @@ export const App: React.FC = () => {
     <div className="app">
       <Game
         levelNumber={levelIndex + 1}
+        hints={forceHints || levelIndex < 10}
         minMoves={minMoves}
         level={level}
         onLevelComplete={navigateToNextLevel}
