@@ -100,35 +100,37 @@ const Game: React.FC<GameProps> = ({
   // What's our progress?
   const progress = computeProgress(minMoves, moves, minMovesNow);
 
-  let movesDescription;
-  if (moves === 0) {
-    movesDescription = (
-      <p>
-        You can beat this level in <span>{minMoves}</span> moves.
-      </p>
-    );
-  } else if (bowlsToFill === 0) {
-    if (moves === minMoves) {
-      movesDescription = (
+  /** Generate a description of current progress. */
+  const progressDescription = () => {
+    if (moves === 0) {
+      return (
         <p>
-          You took a perfect <span>{moves}</span> moves!
+          You can beat this level in <span>{minMoves}</span> moves.
         </p>
       );
+    } else if (bowlsToFill === 0) {
+      if (moves === minMoves) {
+        return (
+          <p>
+            You took a perfect <span>{moves}</span> moves!
+          </p>
+        );
+      } else {
+        return (
+          <p>
+            You took <span>{moves}</span> moves; it can be done in{" "}
+            <span>{minMoves}</span>.
+          </p>
+        );
+      }
     } else {
-      movesDescription = (
+      return (
         <p>
-          You took <span>{moves}</span> moves; it can be done in{" "}
-          <span>{minMoves}</span>.
+          Moves so far: {PROGRESS_CATS[progress]} <span>{moves}</span>
         </p>
       );
     }
-  } else {
-    movesDescription = (
-      <p>
-        Moves so far: {PROGRESS_CATS[progress]} <span>{moves}</span>
-      </p>
-    );
-  }
+  };
 
   return (
     <div className="game">
@@ -146,7 +148,7 @@ const Game: React.FC<GameProps> = ({
         <p>
           Level: <span>{levelNumber}</span>
         </p>
-        {movesDescription}
+        {progressDescription()}
         <p>
           Feeling stuck?{" "}
           <a
