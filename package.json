@@ -21,8 +21,8 @@
     "vscode-css-languageservice": "^5"
   },
   "scripts": {
-    "start": "parcel src/index.html",
-    "build": "parcel build src/index.html",
+    "start": "parcel --no-cache src/index.html",
+    "build": "parcel build --no-cache src/index.html",
     "ci": "npm run type-check && npm run validate-css",
     "type-check": "tsc --noEmit",
     "validate-css": "node scripts/validate-css.mjs src"

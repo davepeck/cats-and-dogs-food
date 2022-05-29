@@ -85,22 +85,22 @@ const LEVELS = [
 ########
 `,
   `
-#####
+  #####
 ###   #
 # $   #
 #.@$.##
-######
+###### 
 `,
   `
-#####
-#   #
+ #####
+ #   #
 ##   #
 # $*##
 # @ .#
 ######
 `,
   `
-#####
+##### 
 #  .##
 #  $@#
 ##$  #
@@ -108,23 +108,23 @@ const LEVELS = [
  #####
 `,
   `
-#####
+##### 
 #   ##
 #   @#
 ##$$ #
 #. .##
-#####
+##### 
 `,
   `
-######
+######  
 #.   ###
 # $ $  #
 # .#@  #
 ########
 `,
   `
-#####
-#.@ #
+##### 
+#.@ # 
 #  $##
 # $ .#
 ##   #
@@ -136,17 +136,17 @@ const LEVELS = [
 #$$ .#
 #.$  #
 #   ##
-#####
+##### 
 `,
   `
-#####
+#####   
 #  .####
 #@$ $  #
 ## .   #
  #######
 `,
   `
-######
+###### 
 # $ .##
 #.  $ #
 #  $@.#
@@ -161,7 +161,7 @@ const LEVELS = [
  #####
 `,
   `
-######
+######  
 # .  ###
 #. $$  #
 #    *@#
@@ -179,15 +179,20 @@ const innerMakeLevel = (levelStr: string): Level =>
     .filter((line) => line != "")
     .map((line) => line.split(""));
 
-/** Take a level string as input; return an (even) level grid. */
+/** Take a level string as input; return an (even) level grid or blow up. */
 const makeLevel = (levelStr: string): Level => {
-  const unevenLevel = innerMakeLevel(levelStr);
-  const width = Math.max(...unevenLevel.map((line) => line.length));
-  return unevenLevel.map((line) => {
-    const paddedLine = line.concat(Array(width - line.length).fill(EMPTY));
-    return paddedLine;
+  const level = innerMakeLevel(levelStr);
+  const width = level[0].length;
+  level.forEach((line) => {
+    if (line.length !== width) {
+      throw new Error(`Level line ${line} has wrong width: ${levelStr}`);
+    }
   });
+  return level;
 };
+
+// validate all levels
+LEVELS.forEach(levelStr => makeLevel(levelStr));
 
 /** Get the [x, y] dimensions of the level array. */
 const getLevelSize = (level: Level): [number, number] => [
@@ -262,12 +267,13 @@ const moveCat = (level: Level, x: number, y: number): Level => {
 
 /** Props to the primary Game component. */
 interface GameProps {
+  levelNumber: number;
   levelStr: string;
   onLevelComplete: () => void;
 }
 
 /** The Game component itself. */
-const Game: React.FC<GameProps> = ({ levelStr, onLevelComplete }) => {
+const Game: React.FC<GameProps> = ({ levelNumber, levelStr, onLevelComplete }) => {
   const [level, setLevel] = useState(makeLevel(levelStr));
 
   useEffect(() => {
@@ -301,6 +307,7 @@ const Game: React.FC<GameProps> = ({ levelStr, onLevelComplete }) => {
       </div>
       <div className="instructions">
         <span className="bowls-to-fill">
+          Level <span>{levelNumber}</span>.{" "}
           {bowlsToFill === 0 ? (
             "You beat the level!"
           ) : (
@@ -341,6 +348,7 @@ export const App: React.FC = () => {
   return (
     <div className="app">
       <Game
+        levelNumber={levelIndex + 1}
         levelStr={LEVELS[levelIndex]}
         onLevelComplete={incrementLevelIndex}
       />
