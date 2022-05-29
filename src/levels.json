@@ -106,7 +106,6 @@
     "author": "Jordi Domènech",
     "authorUrl": "http://sokoban-jd.blogspot.com",
     "license": "CC BY-NC-ND 3.0"
-
   },
   {
     "lines": [
@@ -273,6 +272,194 @@
       "########"
     ],
     "title": "Pufiban 15",
+    "collection": "Pufiban",
+    "collectionUrl": "http://sokoban-jd.blogspot.com/p/all-my-sokoban-collections.html",
+    "author": "Jordi Domènech",
+    "authorUrl": "http://sokoban-jd.blogspot.com",
+    "license": "CC BY-NC-ND 3.0"
+  },
+  {
+    "lines": [
+      " ######",
+      "## .$ #",
+      "#  $$ #",
+      "#@.  .#",
+      "#######"
+    ],
+    "title": "Pufiban 16",
+    "collection": "Pufiban",
+    "collectionUrl": "http://sokoban-jd.blogspot.com/p/all-my-sokoban-collections.html",
+    "author": "Jordi Domènech",
+    "authorUrl": "http://sokoban-jd.blogspot.com",
+    "license": "CC BY-NC-ND 3.0"
+  },
+  {
+    "lines": [
+      "######",
+      "#.@  #",
+      "##*$.#",
+      "#  $ #",
+      "#   ##",
+      "##### "
+    ],
+    "title": "Pufiban 17",
+    "collection": "Pufiban",
+    "collectionUrl": "http://sokoban-jd.blogspot.com/p/all-my-sokoban-collections.html",
+    "author": "Jordi Domènech",
+    "authorUrl": "http://sokoban-jd.blogspot.com",
+    "license": "CC BY-NC-ND 3.0"
+  },
+  {
+    "lines": [
+      " #####",
+      "## . #",
+      "# $  #",
+      "#@$$ #",
+      "#.# .#",
+      "######"
+    ],
+    "title": "Pufiban 18",
+    "collection": "Pufiban",
+    "collectionUrl": "http://sokoban-jd.blogspot.com/p/all-my-sokoban-collections.html",
+    "author": "Jordi Domènech",
+    "authorUrl": "http://sokoban-jd.blogspot.com",
+    "license": "CC BY-NC-ND 3.0"
+  },
+  {
+    "lines": [
+      "#######",
+      "#. #@ #",
+      "#$$ $ #",
+      "#.   .#",
+      "#######"
+    ],
+    "title": "Pufiban 19",
+    "collection": "Pufiban",
+    "collectionUrl": "http://sokoban-jd.blogspot.com/p/all-my-sokoban-collections.html",
+    "author": "Jordi Domènech",
+    "authorUrl": "http://sokoban-jd.blogspot.com",
+    "license": "CC BY-NC-ND 3.0"
+  },
+  {
+    "lines": [
+      "######",
+      "#.$  #",
+      "#+$  #",
+      "#. $ #",
+      "#  ###",
+      "####  "
+    ],
+    "title": "Pufiban 20",
+    "collection": "Pufiban",
+    "collectionUrl": "http://sokoban-jd.blogspot.com/p/all-my-sokoban-collections.html",
+    "author": "Jordi Domènech",
+    "authorUrl": "http://sokoban-jd.blogspot.com",
+    "license": "CC BY-NC-ND 3.0"
+  },
+  {
+    "lines": [
+      "######",
+      "#  . #",
+      "# $ .#",
+      "##$$ #",
+      "#.@ ##",
+      "##### "
+    ],
+    "title": "Pufiban 21",
+    "collection": "Pufiban",
+    "collectionUrl": "http://sokoban-jd.blogspot.com/p/all-my-sokoban-collections.html",
+    "author": "Jordi Domènech",
+    "authorUrl": "http://sokoban-jd.blogspot.com",
+    "license": "CC BY-NC-ND 3.0"
+  },
+  {
+    "lines": [
+      "   #####",
+      "####   #",
+      "#  $@$ #",
+      "# .  .##",
+      "####### "
+    ],
+    "title": "Pufiban 22",
+    "collection": "Pufiban",
+    "collectionUrl": "http://sokoban-jd.blogspot.com/p/all-my-sokoban-collections.html",
+    "author": "Jordi Domènech",
+    "authorUrl": "http://sokoban-jd.blogspot.com",
+    "license": "CC BY-NC-ND 3.0"
+  },
+  {
+    "lines": [
+      "##### ",
+      "#.  ##",
+      "#@.$ #",
+      "# $  #",
+      "###  #",
+      "  ####"
+    ],
+    "title": "Pufiban 23",
+    "collection": "Pufiban",
+    "collectionUrl": "http://sokoban-jd.blogspot.com/p/all-my-sokoban-collections.html",
+    "author": "Jordi Domènech",
+    "authorUrl": "http://sokoban-jd.blogspot.com",
+    "license": "CC BY-NC-ND 3.0"
+  },
+  {
+    "lines": [
+      "#######",
+      "#  $..#",
+      "#   $@#",
+      "#  $.##",
+      "###### "
+    ],
+    "title": "Pufiban 24",
+    "collection": "Pufiban",
+    "collectionUrl": "http://sokoban-jd.blogspot.com/p/all-my-sokoban-collections.html",
+    "author": "Jordi Domènech",
+    "authorUrl": "http://sokoban-jd.blogspot.com",
+    "license": "CC BY-NC-ND 3.0"
+  },
+  {
+    "lines": [
+      "######",
+      "#. $+#",
+      "##$ .#",
+      "#  $ #",
+      "#   ##",
+      "##### "
+    ],
+    "title": "Pufiban 25",
+    "collection": "Pufiban",
+    "collectionUrl": "http://sokoban-jd.blogspot.com/p/all-my-sokoban-collections.html",
+    "author": "Jordi Domènech",
+    "authorUrl": "http://sokoban-jd.blogspot.com",
+    "license": "CC BY-NC-ND 3.0"
+  },
+  {
+    "lines": [
+      "  ####",
+      "###  #",
+      "# $  #",
+      "# .$@#",
+      "# .$.#",
+      "######"
+    ],
+    "title": "Pufiban 26",
+    "collection": "Pufiban",
+    "collectionUrl": "http://sokoban-jd.blogspot.com/p/all-my-sokoban-collections.html",
+    "author": "Jordi Domènech",
+    "authorUrl": "http://sokoban-jd.blogspot.com",
+    "license": "CC BY-NC-ND 3.0"
+  },
+  {
+    "lines": [
+      " #####",
+      "##@ .#",
+      "#.$ .#",
+      "#$ $ #",
+      "#   ##",
+      "##### "
+    ],
+    "title": "Pufiban 27",
     "collection": "Pufiban",
     "collectionUrl": "http://sokoban-jd.blogspot.com/p/all-my-sokoban-collections.html",
     "author": "Jordi Domènech",
