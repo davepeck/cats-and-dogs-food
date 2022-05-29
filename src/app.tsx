@@ -67,11 +67,13 @@ const Game: React.FC<GameProps> = ({
   const [grid, setGrid] = useState(levels.makeGridFromLines(level.lines));
   const [moves, setMoves] = useState(0);
 
-  // Set the initial value for currentLevel
-  useEffect(() => {
+  const reset = (level: levels.Level) => {
     setGrid(levels.makeGridFromLines(level.lines));
     setMoves(0);
-  }, [level]);
+  };
+
+  // Set the initial value for currentLevel
+  useEffect(() => reset(level), [level]);
 
   // Update the level state whenever keys are pressed
   useEffect(() => {
@@ -151,13 +153,7 @@ const Game: React.FC<GameProps> = ({
         {progressDescription()}
         <p>
           Feeling stuck?{" "}
-          <a
-            href="#"
-            onClick={() => {
-              setGrid(levels.makeGridFromLines(level.lines));
-              setMoves(0);
-            }}
-          >
+          <a href="#" onClick={() => reset(level)}>
             Try again
           </a>
           .
