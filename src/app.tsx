@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import * as levels from "./levels";
-import { solve, validate } from "./solver";
+import { solve } from "./solver";
+import { Progress, computeProgress } from "./progress";
 
 /** Mappings from grid pieces to their corresponding CSS classes */
 const CSS_CLASS_NAMES: Record<string, string> = {
@@ -19,6 +20,14 @@ const DIRECTIONS: Record<string, [number, number]> = {
   ArrowDown: [1, 0],
   ArrowLeft: [0, -1],
   ArrowRight: [0, 1],
+};
+
+/** Cat emojis for various progress states. */
+const PROGRESS_CATS: Record<Progress, string> = {
+  perfect: "😻",
+  great: "😺",
+  okay: "🐱",
+  doom: "🙀",
 };
 
 /** Props to the grid component. */
@@ -88,6 +97,9 @@ const Game: React.FC<GameProps> = ({
   // can we still solve the level?
   const minMovesNow = solve(grid);
 
+  // What's our progress?
+  const progress = computeProgress(minMoves, moves, minMovesNow);
+
   let movesDescription;
   if (moves === 0) {
     movesDescription = (
@@ -113,7 +125,7 @@ const Game: React.FC<GameProps> = ({
   } else {
     movesDescription = (
       <p>
-        Moves so far: <span>{moves}</span>
+        Moves so far: {PROGRESS_CATS[progress]} <span>{moves}</span>
       </p>
     );
   }
@@ -124,7 +136,7 @@ const Game: React.FC<GameProps> = ({
       <div className="stats">
         {bowlsToFill === 0 && (
           <p>
-            You won! 😸{" "}
+            You won! 😽{" "}
             <a href="#" onClick={onLevelComplete}>
               Play the next level
             </a>
@@ -135,21 +147,19 @@ const Game: React.FC<GameProps> = ({
           Level: <span>{levelNumber}</span>
         </p>
         {movesDescription}
-        {minMovesNow === null && (
-          <p>
-            Whoops! You're stuck.{" "}
-            <a
-              href="#"
-              onClick={() => {
-                setGrid(levels.makeGridFromLines(level.lines));
-                setMoves(0);
-              }}
-            >
-              Try again
-            </a>
-            .
-          </p>
-        )}
+        <p>
+          Feeling stuck?{" "}
+          <a
+            href="#"
+            onClick={() => {
+              setGrid(levels.makeGridFromLines(level.lines));
+              setMoves(0);
+            }}
+          >
+            Try again
+          </a>
+          .
+        </p>
       </div>
     </div>
   );

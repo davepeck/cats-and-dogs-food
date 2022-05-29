@@ -18,7 +18,7 @@ body {
   margin: 0 auto;
 }
 
-.board {
+.grid {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
@@ -65,8 +65,7 @@ body {
 
 .stats {
   font-size: 1.25em;
-  line-height: 1em;
-  margin-top: 0.5em;
+  margin-top: 1em;
   flex: 0 1 200px;
 
   span {
@@ -94,4 +93,8 @@ button {
   &:hover {
     background-color: #aaf;
   }
+}
+
+.cat-progress {
+  font-size: 3em;
 }
