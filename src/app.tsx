@@ -166,25 +166,31 @@ const LEVELS = [
 #    *@#
 ########
 `,
+  //   `
+  // #######
+  // #.  $ #
+  // #  $.@#
+  // #######
+  // `,
 ];
 
 /** The type of a level grid. */
 type Level = string[][];
 
-/** Take a level string as input; return a (possibly uneven) level grid. */
+/** Take a level string as input; return a (possibly jagged) level grid. */
 const innerMakeLevel = (levelStr: string): Level =>
   levelStr
     .split("\n")
     .filter((line) => line != "")
     .map((line) => line.split(""));
 
-/** Take a level string as input; return an (even) level grid or blow up. */
+/** Take a level string as input; return a rectangular level grid or fail. */
 const makeLevel = (levelStr: string): Level => {
   const level = innerMakeLevel(levelStr);
   const width = level[0].length;
   level.forEach((line) => {
     if (line.length !== width) {
-      throw new Error(`Level line ${line} has wrong width: ${levelStr}`);
+      throw new Error(`Level is not rectangular: ${line.length} !== ${width}`);
     }
   });
   return level;
@@ -302,6 +308,25 @@ const solveLevel = (level: Level): number | null => {
   return null;
 };
 
+/** Props to the board grid component. */
+interface BoardProps {
+  /** The level to display. */
+  level: Level;
+}
+
+/** The board grid component. */
+const Board: React.FC<BoardProps> = ({ level }) => (
+  <div className="board">
+    {level.map((row, y) => (
+      <div className="row" key={y}>
+        {row.map((cell, x) => (
+          <div className={`cell ${PIECES[cell]}`} key={x} />
+        ))}
+      </div>
+    ))}
+  </div>
+);
+
 /** Props to the primary Game component. */
 interface GameProps {
   levelNumber: number;
@@ -323,6 +348,7 @@ const Game: React.FC<GameProps> = ({
   // Set the initial value for currentLevel
   useEffect(() => {
     setLevel(levelStart);
+    setMoves(0);
   }, [levelStart]);
 
   // Update the level state whenever keys are pressed
@@ -380,15 +406,7 @@ const Game: React.FC<GameProps> = ({
 
   return (
     <div className="game">
-      <div className="board">
-        {level.map((row, y) => (
-          <div className="row" key={y}>
-            {row.map((cell, x) => (
-              <div className={`cell ${PIECES[cell]}`} key={x} />
-            ))}
-          </div>
-        ))}
-      </div>
+      <Board level={level} />
       <div className="stats">
         {bowlsToFill === 0 && (
           <p>
@@ -406,7 +424,13 @@ const Game: React.FC<GameProps> = ({
         {minMovesNow === null && (
           <p>
             Whoops! You're struck.{" "}
-            <a href="#" onClick={() => setLevel(levelStart)}>
+            <a
+              href="#"
+              onClick={() => {
+                setLevel(levelStart);
+                setMoves(0);
+              }}
+            >
               Try again
             </a>
             .
@@ -439,6 +463,7 @@ export const App: React.FC = () => {
     return (
       <div className="app">
         <h1>Unsolvable level!</h1>
+        <Board level={level} />
       </div>
     );
   }
