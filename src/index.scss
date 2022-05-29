@@ -6,19 +6,26 @@ body {
   }
 }
 
+p {
+  margin: 0;
+}
+
 .app {
   width: 100%;
-  padding: 1em 1em;
+  height: 90vh;
+  margin: 1em 1em;
 }
 
 .game {
-  max-width: 60vmin;
   display: flex;
-  flex-direction: column;
-  margin: 0 auto;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: left;
+  gap: 1em;
 }
 
 .grid {
+  min-width: 320px;  
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
@@ -65,8 +72,8 @@ body {
 
 .stats {
   font-size: 1.25em;
-  margin-top: 1em;
-  flex: 0 1 200px;
+  line-height: 1.5em;
+  width: 25em;
 
   span {
     color: blue;
