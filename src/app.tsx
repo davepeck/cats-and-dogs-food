@@ -1,4 +1,32 @@
 import { useCallback, useEffect, useState } from "react";
+import _levelDatas from "./levels.json";
+
+/** The structure of a single entry in our levels.json file. */
+interface LevelData {
+  /** The level's title, if any. */
+  title?: string;
+
+  /** The collection the level comes from, if any. */
+  collection?: string;
+
+  /** A URL to the collection, if available. */
+  collectionUrl?: string;
+
+  /** The name of the author of the level, if any. */
+  author?: string;
+
+  /** A link to the author of the level, if any. */
+  authorUrl?: string;
+
+  /** A license, if any. */
+  license?: string;
+
+  /** A recangular grid of strings describing the level. */
+  grid: string[];
+}
+
+/** All of our levels. */
+const levelDatas = _levelDatas as unknown as LevelData[];
 
 // String constants for our grid pieces
 // See http://www.sokobano.de/wiki/index.php?title=Level_format#Level_file_format
@@ -29,164 +57,12 @@ const DIRECTIONS: Record<string, [number, number]> = {
   ArrowRight: [1, 0],
 };
 
-/** All the levels, in order. */
-const LEVELS = [
-  `
- #####
- #.  #
-###  #
-# $  #
-#@   #
-######
-`,
-  `
- #####
- #.. #
-###  #
-# $  #
-# $ ##
-#@  # 
-##### 
-`,
-  `
-#####  
-#@  #  
-# #$###
-# $ ..#
-#######
-`,
-  `
- #####
-##.@ #
-# $$ #
-#.  ##
-##### 
-`,
-  `
-##### 
-#   ##
-#$ *@#
-#..$ #
-######
-`,
-  `
-#####  
-# . ## 
-#  $ ##
-##  $+#
- ######
-`,
-  `
-  ###   
-###+####
-#  $$  #
-#   .  #
-########
-`,
-  `
-  #####
-###   #
-# $   #
-#.@$.##
-###### 
-`,
-  `
- #####
- #   #
-##   #
-# $*##
-# @ .#
-######
-`,
-  `
-##### 
-#  .##
-#  $@#
-##$  #
- # . #
- #####
-`,
-  `
-##### 
-#   ##
-#   @#
-##$$ #
-#. .##
-##### 
-`,
-  `
-######  
-#.   ###
-# $ $  #
-# .#@  #
-########
-`,
-  `
-##### 
-#.@ # 
-#  $##
-# $ .#
-##   #
- #####
-`,
-  `
-######
-# @#.#
-#$$ .#
-#.$  #
-#   ##
-##### 
-`,
-  `
-#####   
-#  .####
-#@$ $  #
-## .   #
- #######
-`,
-  `
-###### 
-# $ .##
-#.  $ #
-#  $@.#
-#######
-`,
-  `
-######
-# . .#
-#@$$##
-##   #
- #   #
- #####
-`,
-  `
-######  
-# .  ###
-#. $$  #
-#    *@#
-########
-`,
-  //   `
-  // #######
-  // #.  $ #
-  // #  $.@#
-  // #######
-  // `,
-];
-
 /** The type of a level grid. */
 type Level = string[][];
 
-/** Take a level string as input; return a (possibly jagged) level grid. */
-const innerMakeLevel = (levelStr: string): Level =>
-  levelStr
-    .split("\n")
-    .filter((line) => line != "")
-    .map((line) => line.split(""));
-
 /** Take a level string as input; return a rectangular level grid or fail. */
-const makeLevel = (levelStr: string): Level => {
-  const level = innerMakeLevel(levelStr);
+const makeLevel = (grid: string[]): Level => {
+  const level = grid.map((line) => line.split(""));
   const width = level[0].length;
   level.forEach((line) => {
     if (line.length !== width) {
@@ -423,7 +299,7 @@ const Game: React.FC<GameProps> = ({
         {movesDescription}
         {minMovesNow === null && (
           <p>
-            Whoops! You're struck.{" "}
+            Whoops! You're stuck.{" "}
             <a
               href="#"
               onClick={() => {
@@ -441,6 +317,15 @@ const Game: React.FC<GameProps> = ({
   );
 };
 
+/** 
+// Validate all levels (can be slow if they're complex!)
+LEVELS.forEach(levelData => {
+  const level = makeLevel(levelData.grid);
+  const minMoves = solveLevel(level);
+  console.log(`Level ${levelData.title ?? 'untitled'} has ${minMoves} moves`);
+})
+*/
+
 /** The top-level react app! */
 export const App: React.FC = () => {
   // Determine the current level
@@ -448,15 +333,15 @@ export const App: React.FC = () => {
   const maybeLevelNumber = parseInt(urlParams.get("level") || "0", 10);
   const levelIndex = isNaN(maybeLevelNumber)
     ? 0
-    : Math.min(Math.max(1, maybeLevelNumber), LEVELS.length) - 1;
+    : Math.min(Math.max(1, maybeLevelNumber), levelDatas.length) - 1;
 
   const navigateToNextLevel = () => {
     // use navigation so that reload takes you back to the same level
-    const nextLevelNumber = ((levelIndex + 1) % LEVELS.length) + 1;
+    const nextLevelNumber = ((levelIndex + 1) % levelDatas.length) + 1;
     window.location.href = `?level=${nextLevelNumber}`;
   };
 
-  const level = makeLevel(LEVELS[levelIndex]);
+  const level = makeLevel(levelDatas[levelIndex].grid);
   const minMoves = solveLevel(level);
 
   if (minMoves === null) {
