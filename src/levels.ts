@@ -128,7 +128,7 @@ export const moveCat = (grid: LevelGrid, y: number, x: number): LevelGrid => {
   // We can move to FOOD cells if the food can be pushed
   else if (moveToCell === FOOD || moveToCell === FULL_BOWL) {
     // Figure out where the food would be pushed to
-    const [newFoodX, newFoodY] = [moveToX + x, moveToY + y];
+    const [newFoodY, newFoodX] = [moveToY + y, moveToX + x];
     const newFoodCell = newGrid[newFoodY][newFoodX];
 
     // We can actually move the food if it's going to an EMPTY or BOWL cell
