@@ -12,20 +12,21 @@ p {
 
 .app {
   width: 100%;
-  height: 90vh;
-  margin: 1em 1em;
+  padding: 2em;
 }
 
 .game {
   display: flex;
+  width: 100%;
+  min-width: 320px;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: left;
-  gap: 1em;
+  gap: 2em;
 }
 
 .grid {
-  min-width: 320px;  
+  min-width: 320px;
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
@@ -73,7 +74,7 @@ p {
 .stats {
   font-size: 1.25em;
   line-height: 1.5em;
-  width: 25em;
+  width: 15me;
 
   span {
     color: blue;
