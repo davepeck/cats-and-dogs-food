@@ -25,8 +25,7 @@ const DIRECTIONS: Record<string, [number, number]> = {
 /** Cat emojis for various progress states. */
 const PROGRESS_CATS: Record<Progress, string> = {
   perfect: "😻",
-  great: "😺",
-  okay: "🐱",
+  good: "😸",
   doom: "🙀",
 };
 
