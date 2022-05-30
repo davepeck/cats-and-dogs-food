@@ -71,7 +71,10 @@ p {
   font-size: 1.25em;
   line-height: 1.5em;
   flex: 0 0 auto;
-  padding: 0.5em;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  padding-top: 0.5em;
+  padding-bottom: 2.5em;
   border-top: 1px solid #ddd;
   width: 100%;
   margin: 0 1em;
@@ -150,6 +153,10 @@ a:hover {
 
   .key {
     width: 2.5em !important;
+  }
+
+  .footer {
+    padding-bottom: 0.666em;
   }
    
   .stats {

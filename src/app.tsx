@@ -252,7 +252,6 @@ const Game: React.FC<GameProps> = ({
     <div className="game">
       <Grid grid={grid} />
       <div className="footer">
-        <ArrowPad onMove={move} />
         <div className="stats">
           <span>
             Level: <em>{levelNumber}</em>.
@@ -283,6 +282,7 @@ const Game: React.FC<GameProps> = ({
             </span>
           )}
         </div>
+        <ArrowPad onMove={move} />
       </div>
     </div>
   );
