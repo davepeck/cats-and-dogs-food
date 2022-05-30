@@ -94,7 +94,9 @@ const Grid: React.FC<GridProps> = ({ grid }) => {
                 className={`cell ${CSS_CLASS_NAMES[cell]}`}
                 style={{ width: `${tileSize}px`, height: `${tileSize}px` }}
                 key={cellIndex}
-              >&nbsp;</div>
+              >
+                &nbsp;
+              </div>
             ))}
           </div>
         ))}
@@ -129,11 +131,14 @@ const Game: React.FC<GameProps> = ({
   onLevelComplete,
 }) => {
   const [grid, setGrid] = useState(levels.makeGridFromLines(level.lines));
+  const [showHints, setShowHints] = useState(hints);
   const [moves, setMoves] = useState(0);
+  const [resetCount, setResetCount] = useState(0);
 
   const reset = (level: levels.Level) => {
     setGrid(levels.makeGridFromLines(level.lines));
     setMoves(0);
+    setResetCount(resetCount + 1);
   };
 
   // Set the initial value for currentLevel
@@ -164,7 +169,12 @@ const Game: React.FC<GameProps> = ({
   const minMovesNow = solve(grid);
 
   // What's our progress?
-  const progress = computeProgress(minMoves, moves, minMovesNow);
+  const progress = showHints
+    ? computeProgress(minMoves, moves, minMovesNow)
+    : null;
+
+  // Should we offer the opportunity to show hints?
+  const showHintLink = !showHints && resetCount > 2;
 
   /** Generate a description of current progress. */
   const progressDescription = () => {
@@ -192,7 +202,7 @@ const Game: React.FC<GameProps> = ({
     } else {
       return (
         <p>
-          Moves so far: {hints ? `${PROGRESS_CATS[progress]} ` : ""}{" "}
+          Moves so far: {progress ? `${PROGRESS_CATS[progress]} ` : ""}{" "}
           <span>{moves}</span>
         </p>
       );
@@ -222,6 +232,14 @@ const Game: React.FC<GameProps> = ({
               Try again
             </a>
             .
+            {showHintLink && (
+              <>
+                {" "}
+                <a href="#" onClick={() => setShowHints(true)}>
+                  Show hints
+                </a>.
+              </>
+            )}
           </p>
         )}
       </div>
