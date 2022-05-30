@@ -120,7 +120,10 @@ const Grid: React.FC<GridProps> = ({ grid }) => {
     }
     const minDimension = Math.min(clientWidth, clientHeight);
     const tileSize = Math.floor(minDimension / Math.max(tilesHigh, tilesWide));
-    const finalTileSize = Math.max(MIN_TILE_SIZE, Math.min(tileSize, MAX_TILE_SIZE));
+    const finalTileSize = Math.max(
+      MIN_TILE_SIZE,
+      Math.min(tileSize, MAX_TILE_SIZE)
+    );
     setTileSize(finalTileSize);
   }, [clientSize]);
 
@@ -222,11 +225,27 @@ const Game: React.FC<GameProps> = ({
   /** Generate a description of current progress. */
   const progressDescription = () => {
     if (moves === 0) {
-      return (
-        <span>
-          Takes just <em>{minMoves}</em> moves.
-        </span>
-      );
+      if (levelNumber === 1) {
+        return (
+          <span>
+            {hasTouchSupport() ? (
+              <>
+                Help the 🐱 push its <em>food</em> over the <em>bowls</em>.
+              </>
+            ) : (
+              <>
+                Use arrow keys to help the 🐱 push its <em>food</em> over the <em>bowls</em>.
+              </>
+            )}
+          </span>
+        );
+      } else {
+        return (
+          <span>
+            Takes just <em>{minMoves}</em> moves.
+          </span>
+        );
+      }
     } else if (won) {
       if (moves === minMoves) {
         return (
@@ -269,10 +288,13 @@ const Game: React.FC<GameProps> = ({
             </span>
           ) : (
             <span>
-              <a href="#" onClick={() => reset(level)}>
-                I&rsquo;m stuck
-              </a>
-              .
+              {moves > 0 && (
+                <>
+                  <a href="#" onClick={() => reset(level)}>
+                    I&rsquo;m stuck
+                  </a>.{" "}
+                </>
+              )}
               {showHintLink && (
                 <>
                   {" "}
