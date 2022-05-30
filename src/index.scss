@@ -8,9 +8,9 @@ p {
   margin: 0;
 }
 
-.app {
-  min-height: 100vh;
-  min-height: -webkit-fill-available;
+#app {
+  height: 100vh;
+  max-height: -webkit-fill-available;
 }
 
 .game {
@@ -19,14 +19,12 @@ p {
   flex-wrap: nowrap;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  min-height: fill-available;
-  min-height: -webkit-fill-available;
+  height: 100vh;
+  max-height: -webkit-fill-available;
 }
 
 .grid {
-  background: yellow;
-  flex: 1 0 auto;
+  flex: 1 1 auto;
   width: 100%;
   max-height: 100vh;
   display: flex;
@@ -74,8 +72,7 @@ p {
   line-height: 1.5em;
   flex: 0 0 auto;
   padding-top: 1em;
-  padding-bottom: 2em;
-  background: red;
+  padding-bottom: 3em;
 
   span {
     color: blue;
@@ -86,4 +83,11 @@ p {
 a:hover {
   background-color: #ddd;
   transition: background-color 0.2s ease-in-out;
+}
+
+
+@media only screen and (max-width: 480px) {  
+  .stats {
+    font-size: 1em;    
+  }
 }

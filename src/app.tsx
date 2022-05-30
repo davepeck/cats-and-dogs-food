@@ -263,14 +263,12 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="app">
-      <Game
-        levelNumber={levelIndex + 1}
-        hints={forceHints || levelIndex < 10}
-        minMoves={minMoves}
-        level={level}
-        onLevelComplete={navigateToNextLevel}
-      />
-    </div>
+    <Game
+      levelNumber={levelIndex + 1}
+      hints={forceHints || levelIndex < 10}
+      minMoves={minMoves}
+      level={level}
+      onLevelComplete={navigateToNextLevel}
+    />
   );
 };
