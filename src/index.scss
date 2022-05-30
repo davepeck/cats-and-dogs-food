@@ -1,10 +1,5 @@
 body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-
-  &:hover {
-    cursor: pointer;
-  }
-
   padding: 0;
   margin: 0;
 }
@@ -14,33 +9,37 @@ p {
 }
 
 .app {
-  padding: 2em;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
 }
 
 .game {
   display: flex;
-  min-width: 320px;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: left;
-  gap: 2em;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  min-height: fill-available;
+  min-height: -webkit-fill-available;
 }
 
 .grid {
-  min-width: 320px;
-  flex: 1 1 auto;
-  padding: 0;
-  margin: 0;
+  background: yellow;
+  flex: 1 0 auto;
+  width: 100%;
+  max-height: 100vh;
+  display: flex;
+  flex-direction: column;
   overflow-y: scroll;
-  max-height: 80vh;
 }
 
 .row {
-  display: block;
+  display: flex;
+  flex-direction: row;
 }
 
 .cell {
-  display: inline-block;
   background-size: 100%;
   background-position: center;
   background-repeat: no-repeat;
@@ -73,7 +72,10 @@ p {
 .stats {
   font-size: 1.25em;
   line-height: 1.5em;
-  width: 100%;
+  flex: 0 0 auto;
+  padding-top: 1em;
+  padding-bottom: 2em;
+  background: red;
 
   span {
     color: blue;
@@ -84,24 +86,4 @@ p {
 a:hover {
   background-color: #ddd;
   transition: background-color 0.2s ease-in-out;
-}
-
-button {
-  display: inline-block;
-  color: blue;
-  text-decoration: underline;
-  margin: 0;
-  padding: 0 0 0 0.25em;
-  background-color: transparent;
-  border: 0px solid transparent;
-  cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
-
-  &:hover {
-    background-color: #aaf;
-  }
-}
-
-.cat-progress {
-  font-size: 3em;
 }

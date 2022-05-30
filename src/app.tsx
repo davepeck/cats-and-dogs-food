@@ -30,68 +30,75 @@ const PROGRESS_CATS: Record<Progress, string> = {
   doom: "🙀",
 };
 
-/** Props to the grid component. */
+/** Don't draw tiles bigger than this many pixels. */
+const MAX_TILE_SIZE = 120;
+
+/** Props to a component that draws a grid of square tiles. */
 interface GridProps {
   /** The grid to display. */
   grid: levels.LevelGrid;
 }
 
-/** The grid drawing component. */
+/**
+ * Fully display a grid of square tiles in the containing space.
+ *
+ * Ensure that the grid is centered in the containing space.
+ *
+ * Pick the maximal possible size for each tile.
+ */
 const Grid: React.FC<GridProps> = ({ grid }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [windowSize, setWindowSize] = useState<[number, number]>([0, 0]);
+  const ref = useRef<HTMLDivElement>(null);
+  const [clientSize, setClientSize] = useState<[number, number]>([0, 0]);
   const [tileSize, setTileSize] = useState<number>(0);
+  const [clientHeight, clientWidth] = clientSize;
+  const [tilesHigh, tilesWide] = levels.getSize(grid);
+  const [gridHeight, gridWidth] = [tileSize * tilesHigh, tileSize * tilesWide];
 
-  // update window size whenever the container changes
+  // update available space whenever the container changes
   useEffect(() => {
-    const updateWindowSize = () => {
-      setWindowSize([window.innerHeight, window.innerWidth]);
+    const updateClientSize = () => {
+      if (!ref.current) return;
+      setClientSize([ref.current.offsetHeight, ref.current.offsetWidth]);
     };
-    updateWindowSize();
-    window.addEventListener("resize", updateWindowSize);
-    return () => window.removeEventListener("resize", updateWindowSize);
-  }, []);
+    updateClientSize();
+    window.addEventListener("resize", updateClientSize);
+    return () => window.removeEventListener("resize", updateClientSize);
+  }, [ref, ref.current]);
 
-  // Update the tile size whenever the layout changes
+  // recompute tile size when client size changes
   useEffect(() => {
-    const current = containerRef.current;
-    if (current === null) return;
-
-    // Determine how large the tiles can get such that the grid fits within
-    // the available container width AND does not overflow the container height.
-    const [tilesHigh, tilesWide] = levels.getSize(grid);
-    const [containerHeight, containerWidth] = [
-      current.offsetHeight,
-      current.offsetWidth,
-    ];
-    const [windowHeight, windowWidth] = windowSize;
-    const maxHeight = windowHeight * 0.75;
-    const maxWidth = Math.min(containerWidth, windowWidth) * 0.75;
-    const maxTileSize = Math.floor(
-      Math.min(maxHeight / tilesHigh, maxWidth / tilesWide)
-    );
-    console.log(
-      `Container size: ${containerHeight}, ${containerWidth}`,
-      `Window size: ${windowHeight}, ${windowWidth}`,
-      `Max tile size: ${maxTileSize}`,
-      `Tiles: ${tilesHigh}x${tilesWide}`
-    );
-    setTileSize(maxTileSize);
-  }, [grid, windowSize]);
+    const [clientHeight, clientWidth] = clientSize;
+    if (clientHeight === 0 || clientWidth === 0) {
+      return;
+    }
+    const minDimension = Math.min(clientWidth, clientHeight);
+    const tileSize = Math.floor(minDimension / Math.max(tilesHigh, tilesWide));
+    const finalTileSize = Math.min(tileSize, MAX_TILE_SIZE);
+    setTileSize(finalTileSize);
+  }, [clientSize]);
 
   return (
-    <div className="grid" ref={containerRef}>
-      {grid.map((row, y) => (
-        <div className="row" key={y}>
-          {row.map((cell, x) => (
-            <div
-              className={`cell ${CSS_CLASS_NAMES[cell]}`}
-              style={{ width: `${tileSize}px`, height: `${tileSize}px` }}
-              key={x}
-            />
-          ))}
-        </div>
-      ))}
+    <div
+      className="grid"
+      style={{
+        paddingTop: `${(clientHeight - gridHeight) / 2}px`,
+        paddingLeft: `${(clientWidth - gridWidth) / 2}px`,
+      }}
+      ref={ref}
+    >
+      {ref.current &&
+        tileSize &&
+        grid.map((row, rowIndex) => (
+          <div className="row" key={rowIndex}>
+            {row.map((cell, cellIndex) => (
+              <div
+                className={`cell ${CSS_CLASS_NAMES[cell]}`}
+                style={{ width: `${tileSize}px`, height: `${tileSize}px` }}
+                key={cellIndex}
+              >&nbsp;</div>
+            ))}
+          </div>
+        ))}
     </div>
   );
 };
@@ -257,15 +264,13 @@ export const App: React.FC = () => {
 
   return (
     <div className="app">
-      <div className="inner">
-        <Game
-          levelNumber={levelIndex + 1}
-          hints={forceHints || levelIndex < 10}
-          minMoves={minMoves}
-          level={level}
-          onLevelComplete={navigateToNextLevel}
-        />
-      </div>
+      <Game
+        levelNumber={levelIndex + 1}
+        hints={forceHints || levelIndex < 10}
+        minMoves={minMoves}
+        level={level}
+        onLevelComplete={navigateToNextLevel}
+      />
     </div>
   );
 };
