@@ -310,7 +310,7 @@ export const App: React.FC = () => {
   return (
     <Game
       levelNumber={levelIndex + 1}
-      hints={forceHints || levelIndex < 10}
+      hints={forceHints || levelIndex < 9}
       minMoves={minMoves}
       level={level}
       onLevelComplete={navigateToNextLevel}
