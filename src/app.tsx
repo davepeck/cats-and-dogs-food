@@ -32,6 +32,38 @@ const PROGRESS_CATS: Record<Progress, string> = {
 /** Don't draw tiles bigger than this many pixels. */
 const MAX_TILE_SIZE = 120;
 
+/** Props to an on-screen set of arrow keys. */
+interface ArrowPadProps {
+  /** Callback to invoke when an arrow is pressed. */
+  onMove: (dy: number, dx: number) => void;
+}
+
+/** An on-screen set of touchable arrow keys, also tied to the keyboard. */
+export const ArrowPad: React.FC<ArrowPadProps> = ({ onMove }) => {
+  // Fire a move event whenever the user presses an arrow key.
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      const direction = DIRECTIONS[e.key];
+      if (direction) onMove(...direction);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [onMove]);
+
+  return (
+    <div className="keys">
+      <div className="keys--row">
+        <button className="key" onClick={() => onMove(-1, 0)}>↑</button>
+      </div>
+      <div className="keys--row">
+        <button className="key" onClick={() => onMove(0, -1)}>←</button>
+        <button className="key" onClick={() => onMove(1, 0)}>↓</button>
+        <button className="key" onClick={() => onMove(0, 1)}>→</button>
+      </div>
+    </div>
+  )
+};
+
 /** Props to a component that draws a grid of square tiles. */
 interface GridProps {
   /** The grid to display. */
@@ -141,29 +173,21 @@ const Game: React.FC<GameProps> = ({
     setResetCount(resetCount + 1);
   };
 
+  const move = useCallback((y: number, x: number) => {
+    const newGrid = levels.moveCat(grid, y, x);
+    const gridChanged =
+      levels.makeGridString(newGrid) !== levels.makeGridString(grid);
+    if (gridChanged) {
+      setGrid(newGrid);
+      setMoves(moves + 1);
+    }
+  }, [grid, moves]);
+
   // Set the initial value for currentLevel
   useEffect(() => reset(level), [level]);
 
-  // Update the level state whenever keys are pressed
-  useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      const direction = DIRECTIONS[e.key];
-      if (direction) {
-        const newGrid = levels.moveCat(grid, ...direction);
-        const gridChanged =
-          levels.makeGridString(newGrid) !== levels.makeGridString(grid);
-        if (gridChanged) {
-          setGrid(newGrid);
-          setMoves(moves + 1);
-        }
-      }
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [grid, setGrid, moves]);
-
   // have we beat the level?
-  const bowlsToFill = levels.getEmptyBowlCount(grid);
+  const won = levels.getEmptyBowlCount(grid) === 0;
 
   // can we still solve the level?
   const minMovesNow = solve(grid);
@@ -181,10 +205,10 @@ const Game: React.FC<GameProps> = ({
     if (moves === 0) {
       return (
         <p>
-          You can beat this level in <span>{minMoves}</span> moves.
+          Takes just <span>{minMoves}</span> moves.
         </p>
       );
-    } else if (bowlsToFill === 0) {
+    } else if (won) {
       if (moves === minMoves) {
         return (
           <p>
@@ -212,36 +236,40 @@ const Game: React.FC<GameProps> = ({
   return (
     <div className="game">
       <Grid grid={grid} />
-      <div className="stats">
-        <p>
-          Level: <span>{levelNumber}</span>
-        </p>
-        {progressDescription()}
-        {bowlsToFill === 0 ? (
+      <div className="footer">
+        <ArrowPad onMove={move} />
+        <div className="stats">
           <p>
-            You won! 😽{" "}
-            <a href="#" onClick={onLevelComplete}>
-              Play the next level
-            </a>
-            .
+            Level: <span>{levelNumber}</span>
           </p>
-        ) : (
-          <p>
-            Feeling stuck?{" "}
-            <a href="#" onClick={() => reset(level)}>
-              Try again
-            </a>
-            .
-            {showHintLink && (
-              <>
-                {" "}
-                <a href="#" onClick={() => setShowHints(true)}>
-                  Show hints
-                </a>.
-              </>
-            )}
-          </p>
-        )}
+          {progressDescription()}
+          {won ? (
+            <p>
+              You won! 😽{" "}
+              <a href="#" onClick={onLevelComplete}>
+                Play the next level
+              </a>
+              .
+            </p>
+          ) : (
+            <p>
+              Feeling stuck?{" "}
+              <a href="#" onClick={() => reset(level)}>
+                Try again
+              </a>
+              .
+              {showHintLink && (
+                <>
+                  {" "}
+                  <a href="#" onClick={() => setShowHints(true)}>
+                    Show hints
+                  </a>
+                  .
+                </>
+              )}
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
