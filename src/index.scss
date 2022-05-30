@@ -23,6 +23,7 @@ p {
 }
 
 .grid {
+  margin: 1em 0;
   flex: 1 1 auto;
   width: 100%;
   max-height: 100vh;
@@ -70,16 +71,19 @@ p {
   font-size: 1.25em;
   line-height: 1.5em;
   flex: 0 0 auto;
-  padding-top: 1em;
-  padding-bottom: 3em;
+  padding: 0.5em;
+  border-top: 1px solid #ddd;
+  width: 100%;
   margin: 0 1em;
 
   display: flex;
-  justify-content: space-around;
+  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
   gap: 1em;
 
-  span {
+  em {
+    font-style: normal;
     color: blue;
     font-weight: 700;
   }
@@ -114,11 +118,11 @@ p {
       color: #222;
       background: #eee;
       border: 1px solid #aaa;
-      width: 2.5em;
+      width: 4em;
       aspect-ratio: 1;
       padding: 0 0.125em;
       flex: 0 0 auto;
-      font-weight: 500;
+      font-weight: 800;
       font-size: 1.25em;
       line-height: 2em;
       text-transform: uppercase;
@@ -140,7 +144,15 @@ a:hover {
 }
 
 @media only screen and (max-width: 480px) {
-  .footer {
-    font-size: 1em;
+  .grid {
+    margin: 0.25em !important;
+  }
+
+  .key {
+    width: 2.5em !important;
+  }
+   
+  .stats {
+    font-size: 3.8vw;
   }
 }

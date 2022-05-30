@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import * as levels from "./levels";
 import { solve } from "./solver";
 import { Progress, computeProgress } from "./progress";
+import { hasTouchSupport } from "./utils";
 
 /** Mappings from grid pieces to their corresponding CSS classes */
 const CSS_CLASS_NAMES: Record<string, string> = {
@@ -50,18 +51,30 @@ export const ArrowPad: React.FC<ArrowPadProps> = ({ onMove }) => {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [onMove]);
 
+  if (!hasTouchSupport()) {
+    return <></>;
+  }
+
   return (
     <div className="keys">
       <div className="keys--row">
-        <button className="key" onClick={() => onMove(-1, 0)}>↑</button>
+        <button className="key" onClick={() => onMove(-1, 0)}>
+          ↑
+        </button>
       </div>
       <div className="keys--row">
-        <button className="key" onClick={() => onMove(0, -1)}>←</button>
-        <button className="key" onClick={() => onMove(1, 0)}>↓</button>
-        <button className="key" onClick={() => onMove(0, 1)}>→</button>
+        <button className="key" onClick={() => onMove(0, -1)}>
+          ←
+        </button>
+        <button className="key" onClick={() => onMove(1, 0)}>
+          ↓
+        </button>
+        <button className="key" onClick={() => onMove(0, 1)}>
+          →
+        </button>
       </div>
     </div>
-  )
+  );
 };
 
 /** Props to a component that draws a grid of square tiles. */
@@ -89,7 +102,7 @@ const Grid: React.FC<GridProps> = ({ grid }) => {
   useEffect(() => {
     const updateClientSize = () => {
       if (!ref.current) return;
-      setClientSize([ref.current.offsetHeight, ref.current.offsetWidth]);
+      setClientSize([ref.current.clientHeight, ref.current.clientWidth]);
     };
     updateClientSize();
     window.addEventListener("resize", updateClientSize);
@@ -173,15 +186,18 @@ const Game: React.FC<GameProps> = ({
     setResetCount(resetCount + 1);
   };
 
-  const move = useCallback((y: number, x: number) => {
-    const newGrid = levels.moveCat(grid, y, x);
-    const gridChanged =
-      levels.makeGridString(newGrid) !== levels.makeGridString(grid);
-    if (gridChanged) {
-      setGrid(newGrid);
-      setMoves(moves + 1);
-    }
-  }, [grid, moves]);
+  const move = useCallback(
+    (y: number, x: number) => {
+      const newGrid = levels.moveCat(grid, y, x);
+      const gridChanged =
+        levels.makeGridString(newGrid) !== levels.makeGridString(grid);
+      if (gridChanged) {
+        setGrid(newGrid);
+        setMoves(moves + 1);
+      }
+    },
+    [grid, moves]
+  );
 
   // Set the initial value for currentLevel
   useEffect(() => reset(level), [level]);
@@ -204,31 +220,30 @@ const Game: React.FC<GameProps> = ({
   const progressDescription = () => {
     if (moves === 0) {
       return (
-        <p>
-          Takes just <span>{minMoves}</span> moves.
-        </p>
+        <span>
+          Takes just <em>{minMoves}</em> moves.
+        </span>
       );
     } else if (won) {
       if (moves === minMoves) {
         return (
-          <p>
-            You took a perfect <span>{moves}</span> moves!
-          </p>
+          <span>
+            You won in <em>{moves}</em> moves. 😻! Purrfect.
+          </span>
         );
       } else {
         return (
-          <p>
-            You took <span>{moves}</span> moves; it can be done in{" "}
-            <span>{minMoves}</span>.
-          </p>
+          <span>
+            You won in <em>{moves}</em> moves. 😽.
+          </span>
         );
       }
     } else {
       return (
-        <p>
+        <span>
           Moves so far: {progress ? `${PROGRESS_CATS[progress]} ` : ""}{" "}
-          <span>{moves}</span>
-        </p>
+          <em>{moves}</em>.
+        </span>
       );
     }
   };
@@ -239,35 +254,33 @@ const Game: React.FC<GameProps> = ({
       <div className="footer">
         <ArrowPad onMove={move} />
         <div className="stats">
-          <p>
-            Level: <span>{levelNumber}</span>
-          </p>
-          {progressDescription()}
+          <span>
+            Level: <em>{levelNumber}</em>.
+          </span>{" "}
+          {progressDescription()}{" "}
           {won ? (
-            <p>
-              You won! 😽{" "}
+            <span>
               <a href="#" onClick={onLevelComplete}>
-                Play the next level
+                Next level
               </a>
-              .
-            </p>
+              !
+            </span>
           ) : (
-            <p>
-              Feeling stuck?{" "}
+            <span>
               <a href="#" onClick={() => reset(level)}>
-                Try again
+                I&rsquo;m stuck
               </a>
               .
               {showHintLink && (
                 <>
                   {" "}
                   <a href="#" onClick={() => setShowHints(true)}>
-                    Show hints
+                    Get hints
                   </a>
                   .
                 </>
               )}
-            </p>
+            </span>
           )}
         </div>
       </div>
