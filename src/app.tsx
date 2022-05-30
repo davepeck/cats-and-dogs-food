@@ -30,6 +30,9 @@ const PROGRESS_CATS: Record<Progress, string> = {
   doom: "🙀",
 };
 
+/** Don't draw tiles smaller than this many pixels. */
+const MIN_TILE_SIZE = 15;
+
 /** Don't draw tiles bigger than this many pixels. */
 const MAX_TILE_SIZE = 120;
 
@@ -117,7 +120,7 @@ const Grid: React.FC<GridProps> = ({ grid }) => {
     }
     const minDimension = Math.min(clientWidth, clientHeight);
     const tileSize = Math.floor(minDimension / Math.max(tilesHigh, tilesWide));
-    const finalTileSize = Math.min(tileSize, MAX_TILE_SIZE);
+    const finalTileSize = Math.max(MIN_TILE_SIZE, Math.min(tileSize, MAX_TILE_SIZE));
     setTileSize(finalTileSize);
   }, [clientSize]);
 
