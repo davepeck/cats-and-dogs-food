@@ -19,6 +19,10 @@ import {
  * Smarter approaches would only consider pushes, would use a shortest path 
  * algorithm to figure out how to get the cat to a potential push, and would 
  * have a few heuristics to determine when a position is hopeless.
+ *
+ * Stepping way back: Sokoban is PSPACE-complete. All attempts to solve
+ * it in the general case will be met with ruin. It is given to the realm of 
+ * modern high-scale AI solvers.
  */
 export const solve = (grid: LevelGrid): number | null => {
   const visited = new Set<string>([makeGridString(grid)]);
