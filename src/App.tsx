@@ -4,6 +4,9 @@ import { solve } from "./solver";
 import { Progress, computeProgress } from "./progress";
 import { hasTouchSupport } from "./utils";
 
+import "./normalize.css";
+import "./food.scss";
+
 /** Mappings from grid pieces to their corresponding CSS classes */
 const CSS_CLASS_NAMES: Record<string, string> = {
   [levels.BOWL]: "bowl",
@@ -110,7 +113,7 @@ const Grid: React.FC<GridProps> = ({ grid }) => {
     updateClientSize();
     window.addEventListener("resize", updateClientSize);
     return () => window.removeEventListener("resize", updateClientSize);
-  }, [ref, ref.current]);
+  }, [ref]);
 
   // recompute tile size when client size changes
   useEffect(() => {
@@ -125,7 +128,7 @@ const Grid: React.FC<GridProps> = ({ grid }) => {
       Math.min(tileSize, MAX_TILE_SIZE)
     );
     setTileSize(finalTileSize);
-  }, [clientSize]);
+  }, [clientSize, tilesHigh, tilesWide]);
 
   return (
     <div
@@ -186,11 +189,14 @@ const Game: React.FC<GameProps> = ({
   const [moves, setMoves] = useState(0);
   const [resetCount, setResetCount] = useState(0);
 
-  const reset = (level: levels.Level) => {
-    setGrid(levels.makeGridFromLines(level.lines));
-    setMoves(0);
-    setResetCount(resetCount + 1);
-  };
+  const reset = useCallback(
+    (level: levels.Level) => {
+      setGrid(levels.makeGridFromLines(level.lines));
+      setMoves(0);
+      setResetCount(resetCount + 1);
+    },
+    [resetCount]
+  );
 
   const move = useCallback(
     (y: number, x: number) => {
@@ -206,7 +212,11 @@ const Game: React.FC<GameProps> = ({
   );
 
   // Set the initial value for currentLevel
-  useEffect(() => reset(level), [level]);
+  useEffect(
+    () => reset(level),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [level]
+  );
 
   // have we beat the level?
   const won = levels.getEmptyBowlCount(grid) === 0;
@@ -234,7 +244,8 @@ const Game: React.FC<GameProps> = ({
               </>
             ) : (
               <>
-                Use arrow keys to help the 🐱 push its <em>food</em> over the <em>bowls</em>.
+                Use arrow keys to help the 🐱 push its <em>food</em> over the{" "}
+                <em>bowls</em>.
               </>
             )}
           </span>
@@ -292,7 +303,8 @@ const Game: React.FC<GameProps> = ({
                 <>
                   <a href="#" onClick={() => reset(level)}>
                     I&rsquo;m stuck
-                  </a>.{" "}
+                  </a>
+                  .{" "}
                 </>
               )}
               {showHintLink && (
